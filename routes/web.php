@@ -16,6 +16,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventController;
 
 Route::get('/', [EventController::class, 'index']);
+Route::get('/events/create', [EventController::class, 'create'])->middleware('auth');
+Route::get('/events/{id}', [EventController::class, 'search'])->middleware('auth');
+Route::post('/events/create', [EventController::class, 'store'])->middleware('auth');
+Route::delete('/events/{id}', [EventController::class, 'destroy'])->middleware('auth');
+
+Route::get('/dashboard', [EventController::class, 'dashboard'])->middleware('auth');
 
 Route::get('/teste', function() {
     $nome = 'Joaquim';
@@ -27,12 +33,8 @@ Route::get('/teste', function() {
     return view('teste', ['nome' => $nome, 'arr' => $arr, 'names' => $nomes]);
 });
 
-Route::get('/produtos', function() {
-    $busca = request('search');
-
-    return view('produtos', ['busca' => $busca]);
-});
-
-Route::get('/produto/{id?}', function ($id = null) {
-    return view('produto', ['id' => $id]);
-});
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified'
+]);
